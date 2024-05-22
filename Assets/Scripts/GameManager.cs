@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     private void ResetState()
     {
         // reset pacman state
-
+        pacman.ResetState();
     }
 
     private void SetLives(int lives)
@@ -72,7 +72,14 @@ public class GameManager : MonoBehaviour
 
     public void PelletEaten(Pellet pellet)
     {
-        
+        SetScore(++score);
+
+        if(!PelletsLeft())
+        {
+            //win
+            pacman.gameObject.SetActive(false);
+            Invoke(nameof(NewRound), 3);
+        }
     }
 
 }
