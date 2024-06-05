@@ -6,7 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-
+    [SerializeField]
+    Ghost[] ghosts;
     [SerializeField] private Pacman pacman;
     [SerializeField] private Transform pellets;
     [SerializeField] private Text gameOverText;
@@ -34,6 +35,13 @@ public class GameManager : MonoBehaviour
         NewGame();
     }
 
+    private void Update()
+    {
+        if ((lives<=0) &&Input.anyKey)
+        {
+            NewGame();
+        }
+    }
 
     private void NewGame()
     {
@@ -55,6 +63,11 @@ public class GameManager : MonoBehaviour
 
     private void ResetState()
     {
+        foreach(Ghost ghost in ghosts)
+        {
+            ghost.ResetState();
+        }
+
         // reset pacman state
         pacman.ResetState();
     }
@@ -82,6 +95,13 @@ public class GameManager : MonoBehaviour
             Invoke(nameof(NewRound), 3);
         }
     }
+    public void PowerPelletEaten(PowerPellet pellet)
+    {
+        for (int i = 0; i < ghosts.Length; i++)
+        {
+            ghosts[i].Frightened.Enable(pellet.duration);
+        }
+    }
 
     private bool PelletsLeft()
     {
@@ -91,5 +111,29 @@ public class GameManager : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    public void PacmanEaten()
+    {
+        pacman.gameObject.SetActive(false);
+        SetLives(lives - 1);
+        if (lives > 0)
+            Invoke(nameof(ResetState), 3);
+        else
+            GameOver();
+    }
+
+    void GameOver()
+    {
+        foreach(Ghost ghost in ghosts)
+        {
+            ghost.gameObject.SetActive(false);
+        }
+    }
+
+    internal void GhostEaten(Ghost ghost)
+    {
+        int points = ghost.Points;
+        SetScore(score + points);
     }
 }
