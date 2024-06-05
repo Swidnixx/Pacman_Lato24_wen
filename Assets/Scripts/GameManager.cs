@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -82,4 +83,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private bool PelletsLeft()
+    {
+        foreach(Transform p in pellets)
+        {
+            if (p.gameObject.activeSelf)
+                return true;
+        }
+        return false;
+    }
 }
