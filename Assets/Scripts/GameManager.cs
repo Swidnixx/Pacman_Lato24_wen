@@ -5,7 +5,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-
+    [SerializeField]
+    Ghost[] ghosts;
     [SerializeField] private Pacman pacman;
     [SerializeField] private Transform pellets;
     [SerializeField] private Text gameOverText;
@@ -56,6 +57,11 @@ public class GameManager : MonoBehaviour
     {
         // reset pacman state
         pacman.ResetState();
+
+        foreach(Ghost g in ghosts)
+        {
+            g.ResetState();
+        }
     }
 
     private void SetLives(int lives)
@@ -82,4 +88,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    bool PelletsLeft()
+    {
+        int childer = pellets.childCount;
+        for(int i=0; i<childer; i++)
+        {
+            Transform child = pellets.GetChild(i);
+            if (child.gameObject.activeSelf)
+                return true;
+        }
+        return false;
+    }
+
+    public void PacmanEaten()
+    {
+        pacman.gameObject.SetActive(false);
+        SetLives(lives - 1);
+        if (lives > 0)
+            Invoke(nameof(ResetState), 3);
+        else
+            GameOver();
+    }
+
+    void GameOver()
+    {
+        foreach(Ghost g in ghosts)
+        {
+            g.gameObject.SetActive(false);
+        }
+        gameOverText.gameObject.SetActive(true);
+        gameOverText.enabled = true;
+    }
+
+    private void Update()
+    {
+        if (lives <= 0 && Input.anyKeyDown)
+            NewGame();
+    }
 }

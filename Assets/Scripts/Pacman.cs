@@ -7,7 +7,7 @@ public class Pacman : MonoBehaviour
 {
     public Movement movement;
 
-    private void Start()
+    private void Awake()
     {
         movement = GetComponent<Movement>();
     }
